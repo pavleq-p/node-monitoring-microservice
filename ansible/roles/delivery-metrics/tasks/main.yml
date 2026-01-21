@@ -1,0 +1,8 @@
+---
+- name: Deploy with systemd
+  include_tasks: systemd.yml
+  when: deploy_mode == "systemd"
+  
+- name: Deploy with docker
+  include_tasks: docker.yml
+  when: deploy_mode == "docker"

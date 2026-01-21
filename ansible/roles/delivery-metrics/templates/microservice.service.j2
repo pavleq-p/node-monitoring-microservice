@@ -1,0 +1,14 @@
+[Unit]
+Description=Microservice Metrics
+After=network.target
+
+[Service]
+Type=simple
+User={{ ansible_user }}
+WorkingDirectory=/opt/microservice
+ExecStart=/usr/bin/python3 /opt/microservice/app.py
+#Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

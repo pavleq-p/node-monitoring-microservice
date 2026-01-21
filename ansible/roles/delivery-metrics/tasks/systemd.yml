@@ -1,0 +1,86 @@
+---
+- name: Create user for microservice
+  user:
+    name: "{{ ansible_user }}"
+    state: present
+    shell: /bin/bash
+    groups: sudo
+    append: yes
+  become: yes
+  
+- name: Install Python3
+  package:
+    name: 
+        - python3 
+        - python3-pip
+    state: present
+  become: yes
+
+- name: Create directory for microservice
+  file:
+    path: /opt/microservice
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0755' 
+  become: yes
+
+- name: Copy microservice script
+  copy:
+    src: app.py
+    dest: /opt/microservice/app.py
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0644'  
+  become: yes
+
+- name: Install prometheus client
+  block:
+    - name: Install on Debian-based systems
+      package:
+        name: python3-prometheus-client
+        state: present
+      when: ansible_os_family == "Debian"
+      become: yes
+
+    - name: Install on RedHat-based systems
+      pip:
+        name: prometheus_client
+        executable: pip3
+        state: present
+      when: ansible_os_family == "RedHat"
+      become: yes
+  become: yes
+
+- name: Copy systemdunit file
+  template:
+    src: microservice.service.j2
+    dest: /etc/systemd/system/microservice.service
+    owner: root
+    group: root
+    mode: '0644'
+  become: yes
+
+- name: Reload systemd daemon
+  systemd:
+    daemon_reload: yes
+  become: yes
+
+- name: Enable and start microservice 
+  systemd:
+    name: microservice
+    state: started
+    enabled: yes
+  become: yes
+
+- name: Verify service status
+  systemd:
+    name: microservice
+    state: started
+  register: service_status
+  become: yes
+
+- name: Debug service status
+  debug:
+    msg: "Service microservice is {{ service_status.status }}"
+  when: service_status.status != "running"

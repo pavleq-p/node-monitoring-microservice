@@ -1,0 +1,21 @@
+---
+
+
+- name: Pull image from Docker Hub
+  docker_image:
+    name: pavleq/microservice:latest
+    source: pull
+  become: yes
+
+- name: Run microservice container
+  docker_container:
+    name: microservice-container
+    image: pavleq/microservice:latest
+    state: started
+    restart_policy: always
+    ports:
+      - "8081:8080"
+    env:
+      HOST_TYPE_OVERRIDE: "container"
+    restart: yes
+  become: yes

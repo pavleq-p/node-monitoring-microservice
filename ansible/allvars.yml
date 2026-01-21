@@ -1,0 +1,2 @@
+deploy_mode: "docker"
+docker_user: "docker_user"

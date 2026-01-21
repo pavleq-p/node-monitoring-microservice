@@ -1,0 +1,15 @@
+---
+- name: Deploy microservice 
+  hosts: all
+  connection: ssh 
+  become: yes      
+  become_method: sudo
+  become_user: root
+  vars:
+    ansible_python_interpreter: /usr/bin/python3     
+    ansible_become_exe: /usr/bin/sudo 
+  vars_files:
+    - allvars.yml
+  roles:
+    - docker
+    - delivery-metrics
