@@ -2,7 +2,7 @@
 .terraform/
 *.tfstate
 *.tfstate.backup
-*.tfvars          # ← особенно важно! не пушим секреты
+*.tfvars        
 terraform.tfvars
 
 # Ansible
